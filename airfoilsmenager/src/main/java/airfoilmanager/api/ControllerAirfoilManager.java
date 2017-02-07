@@ -16,20 +16,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 public class ControllerAirfoilManager {
     private final ServiceAirfoil serviceAirfoil;
     private final ServiceMenu serviceMenu;
-    private final Converter converter;
+
 
     @Autowired(required = false)
     public ControllerAirfoilManager(ServiceAirfoil serviceAirfoil, ServiceMenu serviceMenu, Converter converter) {
         this.serviceAirfoil = serviceAirfoil;
         this.serviceMenu = serviceMenu;
-        this.converter = converter;
     }
 
     @RequestMapping("/getMenu")
@@ -49,8 +47,7 @@ public class ControllerAirfoilManager {
 
     @RequestMapping("/getAirfoils/{prefix}")
     public List<AirfoilDto> getAirfoilsByPrefix(@PathVariable @NonNull String prefix) {
-        List<Airfoil> airfoils = serviceAirfoil.getAirfoilsByPrefix(new Prefix(prefix.charAt(0)));
-        return airfoils.stream().map(converter::toDtoAirfoil).collect(Collectors.toList());
+        return serviceAirfoil.getAirfoilsByPrefix(new Prefix(prefix.charAt(0)));
     }
 
     @RequestMapping(value = "/addAirfoil", method = RequestMethod.POST)

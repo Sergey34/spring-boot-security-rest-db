@@ -3,29 +3,34 @@ package airfoilmanager.AirfoilManagerService;
 import airfoilmanager.dao.AirfoilDao;
 import base.domain.airfoil.Airfoil;
 import base.domain.airfoil.Prefix;
+import base.dto.AirfoilDto;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class ServiceAirfoil {
     private final AirfoilDao airfoilDao;
+    private final Converter converter;
 
     @Autowired(required = false)
-    public ServiceAirfoil(AirfoilDao airfoilDao) {
+    public ServiceAirfoil(AirfoilDao airfoilDao,  Converter converter) {
         this.airfoilDao = airfoilDao;
+        this.converter = converter;
     }
 
     public Airfoil getAirfoilById(@NonNull String id) {
         return airfoilDao.findOne(id);
     }
 
-    public List<Airfoil> getAirfoilsByPrefix(@NonNull Prefix prefix) {
-        return airfoilDao.findAllByPrefix(prefix);
+    public List<AirfoilDto> getAirfoilsByPrefix(@NonNull Prefix prefix) {
+        List<Airfoil> airfoils = airfoilDao.findAllByPrefix(prefix);
+        return airfoils.stream().map(converter::toDtoAirfoil).collect(Collectors.toList());
     }
 
     public String addAirfoil(@NonNull Airfoil airfoil) {
